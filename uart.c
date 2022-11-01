@@ -98,21 +98,6 @@ int startNodeMcuConnection(int *port){
        printf("NodeMCU com problema!");
        return 0x1F;
     }
-    
-    /*if(serialDataAvail (port) ) {
-        printf("NodeMCU esta ok. Conexao serial estabelecida!");
-        return 0x00;
-    }
-    
-    else if ((port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
-  		fprintf (stderr, "Conexao serial inviavel. Dispositivo serial inapto: %s\n", strerror (errno)) ;
-  		return 0x1F;
-  	}
-
-  	else if (wiringPiSetup () == -1){
- 		fprintf (stdout, "Unable to start wiringPi: %s\n", strerror (errno)) ;
- 		return 0x1F;
-  	} */
   	
     else{
         printf("Problema desconhecido detectado!");
