@@ -1,0 +1,27 @@
+Dip Switch:
+	1 - GPIO-4
+	2 - GPIO-17
+	3 - GPIO-27
+	4 - GPIO-22
+	
+Push-Buttons:
+	1 - GPIO-5
+	2 - GPIO-19
+	3 - GPIO-26
+	
+Potenciômetros:
+	Pontênciometro 1: canal A3 do ADS1115
+	Pontênciometro 1: canal A0 do ADS1115
+	
+Display LCD:
+	RS: GPIO-25 (8 - 15 - 25)
+	RW: GND
+	E:  GPIO-01 (0 - 3 - 1 )
+	D4: GPIO-12 (4 - 6 - 12 )
+	D5: GPIO-16 (4 - 18 - 16)
+	D6: GPIO-20 (8 - 0 - 20 )
+	D7: GPIO-21 (8 - 3 - 21 )
+
+BITS TO WRITE:
+(RS => sempre 1) D7 D6 D5 D4
+
