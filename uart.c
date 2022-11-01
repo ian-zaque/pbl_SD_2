@@ -12,21 +12,13 @@
 
 #define BAUD_RATE 9600
 
+int startNodeMcuConnection(int *port);
+int valueAnalogicInput(int *port);
+
 int main (void) {
 	int serial_port;
-	char dat;
-	int menu_choice = 0;
-	
-	if ((serial_port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
-    		fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno)) ;
-    		return 1 ;
-  	}
-
-  	if (wiringPiSetup () == -1)
-	{
-    		fprintf (stdout, "Unable to start wiringPi: %s\n", strerror (errno)) ;
-    		return 1;
-  	}
+	char serial_input[2], serial_output[2];        //[0] => Command; [1] => Address
+	int menu_choice = 99, status_nodemcu = 0;
   	
  	//while(1){
 	//	if(serialDataAvail (serial_port) ) {
@@ -38,16 +30,18 @@ int main (void) {
 	//	}
 	//}
 	do{
-        printf("Escolha uma das opcoes abaixo. \n\n");
-        printf("1) Receber dados. \n");
-        printf("2) Requisitar Sensor. \n");
-        printf("3) Sair. \n");
+        printf("Escolha uma das opcoes abaixo: \n\n");
+        printf("1) Status NodeMCU. \n");                //Cod 0x03
+        printf("2) Valor da entrada analógica. \n");    //Cod 0x04
+        printf("3) Valor de entrada digital. \n");      //Cod 0x05
+        printf("4) Acender LED NodeMCU. \n");           //Cod 0x06
+        printf("0) Sair. \n");
         printf("Opcao: ");
-        
         scanf("%d \n", &menu_choice);
+        
         switch(menu_choice){
                case 1:
-                    //topo = criar_celula(topo, &qntd_jogadores); //Chamada de função que cria os nós e cadastra os jogadores.
+                    status_nodemcu = startNodeMcuConnection(&serial_port);
                     system("cls");
 			        break;
 			        
@@ -61,13 +55,67 @@ int main (void) {
                     system("cls");
 			        break;
 			        
+               case 4:
+                    //topo = criar_celula(topo, &qntd_jogadores); //Chamada de função que cria os nós e cadastra os jogadores.
+                    system("cls");
+			        break;
+			        
+              case 0:
+                    printf("Programa encerrado!");
+                    exit;
+			        break;
+			        
               default:
                       printf("Opcao invalida!");
         }
     
     }
-    while(menu_choice != 3);
+    while(menu_choice != 0);
     
     return 0;
 }
 
+
+
+int startNodeMcuConnection(int *port){
+    
+    //write 0x03 twice; this checks the NodeMCU status
+    serial_output[0] = 0x03;
+    serial_output[1] = 0x03;
+    serialPutchar(port, serial_output[0]);
+    serialPutchar(port, serial_output[1]);
+    
+    for(int i = 0; i < 2; i++){
+        serial_input[i] = serialGetchar(port);
+    }
+    
+    if(serial_input[0] == 0x00  && serial_input[1] == 0x00){
+       printf("NodeMCU funcionando normalmente!");
+       return 0x00;  
+    }
+    
+    else if(serial_input[0] == 0x1F  && serial_input[1] == 0x1F){
+       printf("NodeMCU com problema!");
+       return 0x1F;
+    }
+    
+    /*if(serialDataAvail (port) ) {
+        printf("NodeMCU esta ok. Conexao serial estabelecida!");
+        return 0x00;
+    }
+    
+    else if ((port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
+  		fprintf (stderr, "Conexao serial inviavel. Dispositivo serial inapto: %s\n", strerror (errno)) ;
+  		return 0x1F;
+  	}
+
+  	else if (wiringPiSetup () == -1){
+ 		fprintf (stdout, "Unable to start wiringPi: %s\n", strerror (errno)) ;
+ 		return 0x1F;
+  	} */
+  	
+    else{
+        printf("Problema desconhecido detectado!");
+        return 0x1F;
+    }   
+}
