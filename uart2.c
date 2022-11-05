@@ -5,6 +5,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include<locale.h>
+#include <unistd.h>                //BIB TO SLEEP FUNCTION
 #include <errno.h>
 
 #include <wiringPi.h>
@@ -12,9 +15,15 @@
 
 #define BAUD_RATE 9600
 
+void sendData(int port, char addr, char comm);
+void recData(int port, char *addr, char *comm);
+
 int main (void) {
-        int serial_port;
-        char dat, output_address, output_command, input_address, input_command;
+        setlocale(LC_ALL,"Portuguese");			//Comando para utilizar caracteres a lingua portuguesa.
+    
+        int serial_port, i = 0;
+        char menu_choice = 'a';
+        unsigned char output_address, output_command, input_address, input_command;
 
         if ((serial_port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
                 fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno)) ;
@@ -26,47 +35,234 @@ int main (void) {
                 fprintf (stdout, "Unable to start wiringPi: %s\n", strerror (errno)) ;
                 return 1;
         }
-        
-        printf("Port: %d \n", serial_port);
-        dat = serialGetchar (serial_port);
-        printf ("Dat: %d \n", dat);
-        fflush (stdout) ;
-        serialPutchar(serial_port, 0x00);
-        dat = serialGetchar (serial_port);
-        printf ("Dat: %d \n", dat) ;
-        
-        output_command = 0x03;
-        output_address = 0x03;
-        
-        //if(serialDataAvail (serial_port) > 0){
-            serialPutchar(serial_port, output_command);
-            serialPutchar(serial_port, output_address);
-        
-            input_command = serialGetchar(serial_port);
-            input_address = serialGetchar(serial_port);
-        
-            printf("out: %d , %d \n", output_address, output_command, output_address, output_command);
-            printf("in: %d , %d, %X , %X \n", input_address, input_command, input_address, input_command);
-        
-            if(input_command == 0x00  && input_address == 0x00){
-               printf("NodeMCU funcionando normalmente!");
-               //return 0x00;
+
+        system("cls || clear");
+        printf("PBL - Interfaces de E/S. \n \n");
+        printf("As ações seguirão a seguinte ordem: \n");
+        printf("1 - Solicita a situa atual do NodeMCU. \n");
+        printf("2 - Solicita o valor da entrada analógica. \n");
+        printf("3 - Solicita o valor de uma das entradas digitais. \n");
+        printf("4 - Acendimento do led da NodeMCU. \n");
+        printf("5 - Desligamento do led da NodeMCU. \n \n");
+        sleep(4);
+
+        for(i = 0; i <= 4; i++){
+            if(i == 0){                   //write 0x03 twice; this checks the NodeMCU status.
+               //system("cls || clear");
+               printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
+               sleep(4);
+
+               output_command = 0x03;
+               output_address = 0x03;
+               sendData(serial_port, output_address, output_command);
+
+               printf("addr out: %X , %d \n ", output_address);
+               printf("comm out: %X , %d \n ", output_command);
+               printf("addr in 0: %X , %d \n ", input_address);
+               printf("comm in 0: %X , %d \n ", input_command);
+
+               recData(serial_port, &input_address, &input_command);
+               printf("addr in 0: %X , %d \n ", input_address);
+               printf("comm in 0: %X , %d \n \n", input_command);
             }
-        
-            else if(input_command == 0x1F  && input_address == 0x1F){
-               printf("NodeMCU com problema!");
-               //return 0x1F;
+
+            if(i == 1){            //write 0x04 twice; this requests analog input value
+               //system("cls || clear");
+               printf("Ação: Solicita o valor da entrada analógica. \n \n");
+               sleep(4);
+
+               output_command = 0x04;
+               output_address = 0x04;
+               sendData(serial_port, output_address, output_command);
+
+               printf("addr out: %X , %d \n ", output_address);
+               printf("comm out: %X , %d \n ", output_command);
+               printf("addr in 1: %X , %d \n ", input_address);
+               printf("comm in 1: %X , %d \n ", input_command);
+
+               recData(serial_port, &input_address, &input_command);
+               printf("addr in 1: %X , %d \n ", input_address);
+               printf("comm in 1: %X , %d \n \n", input_command);
             }
-        
-            else{
-                printf("Problema desconhecido detectado!");
-                //return 0x1F;
+
+            if(i == 2){            //this requests some digital input value
+               //system("cls || clear");
+               printf("Ação: Solicita o valor de uma das entradas digitais. \n \n");
+               sleep(4);
+
+               output_command = 0x05;
+               output_address = 0x04;   // IMPLEMENT HERE HOW TO CHOOSE WHAT INPUT WILL BE READ
+               sendData(serial_port, output_address, output_command);
+
+               printf("addr out: %X , %d \n ", output_address);
+               printf("comm out: %X , %d \n ", output_command);
+               printf("addr in 2: %X , %d \n ", input_address);
+               printf("comm in 2: %X , %d \n ", input_command);
+
+               recData(serial_port, &input_address, &input_command);
+               printf("addr in 2: %X , %d \n ", input_address);
+               printf("comm in 2: %X , %d \n \n", input_command);
             }
-        //}
-        //else{
-           //printf("Problema desconhecido detectado!!  %d \n \n",serial_port);
-           //return 0x1F;
-       //}
+
+            if(i == 3){            //this turn on the led
+               //system("cls || clear");
+               printf("Ação: Acendimento do led da NodeMCU. \n \n");
+               sleep(4);
+
+               output_command = 0x06;
+               output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
+               sendData(serial_port, output_address, output_command);
+
+               printf("addr out: %X , %d \n ", output_address);
+               printf("comm out: %X , %d \n ", output_command);
+               printf("addr in 3: %X , %d \n ", input_address);
+               printf("comm in 3: %X , %d \n ", input_command);
+
+               recData(serial_port, &input_address, &input_command);
+               printf("addr in 3: %X , %d \n ", input_address);
+               printf("comm in 3: %X , %d \n \n", input_command);
+            }
+
+            if(i == 4){            //this turn off the led
+               i = -1;       // RESET THE LOOP
+
+               //system("cls || clear");
+               printf("Ação: Desligamento do led da NodeMCU. \n \n");
+               sleep(4);
+
+               output_command = 0x07;
+               output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
+               sendData(serial_port, output_address, output_command);
+
+               printf("addr out: %X , %d \n ", output_address);       
+               printf("comm out: %X , %d \n ", output_command);   
+               printf("addr in 4: %X , %d \n ", input_address); 
+               printf("comm in 4: %X , %d \n ", input_command); 
+
+               recData(serial_port, &input_address, &input_command);
+               printf("addr in 4: %X , %d \n ", input_address);
+               printf("comm in 4: %X , %d \n \n", input_command);
+            }
+
+        }
+
+        /*do {
+            printf("Escolha uma das opções abaixo. \n\n");
+            printf("1) Verificar status do NodeMCU. \n");
+            printf("2) Requisitar entrada analógica. \n");
+            printf("3) Requisitar entrada digital. \n");
+            printf("4) Piscar Led. \n");
+            printf("5) Desligar Led. \n");
+            printf("0) Encerrar. \n");
+            printf("Opção: ");
+            scanf("%s \n", &menu_choice);
+            
+            switch(menu_choice){
+                  case '0':
+                       printf("Programa encerrado.");
+                       break;
+            
+                  case '1':                   //write 0x03 twice; this checks the NodeMCU status.
+                       output_command = 0x03;
+                       output_address = 0x03;
+                       sendData(serial_port, output_address, output_command);
+                       
+                       printf("addr out: %d \n ", output_address);
+                       printf("comm out: %d \n ", output_command);
+                       printf("addr in 1: %d \n ", input_address);
+                       printf("comm in 1: %d \n ", input_command);
+                       
+                       recData(serial_port, &input_address, &input_command);
+                       printf("addr in 2: %d \n ", input_address);
+                       printf("comm in 2: %d \n ", input_command);
+                       break;
+                
+                case '2':                   //write 0x04 twice; this requests analog input value
+                       output_command = 0x04;
+                       output_address = 0x04;
+                       sendData(serial_port, output_address, output_command);
+                       
+                       printf("addr out: %X \n ", output_address);
+                       printf("comm out: %X \n ", output_command);
+                       printf("addr in 1: %X \n ", input_address);
+                       printf("comm in 1: %X \n ", input_command);
+                       
+                       recData(serial_port, &input_address, &input_command);
+                       printf("addr in 2: %X \n ", input_address);
+                       printf("comm in 2: %X \n ", input_command);
+                       break;
+                
+                case '3':            //this requests some digital input value
+                       output_command = 0x05;
+                       output_address = 0x04;   // IMPLEMENT HERE HOW TO CHOOSE WHAT INPUT WILL BE READ
+                       sendData(serial_port, output_address, output_command);
+                       
+                       printf("addr out: %X \n ", output_address);
+                       printf("comm out: %X \n ", output_command);
+                       printf("addr in 1: %X \n ", input_address);
+                       printf("comm in 1: %X \n ", input_command);
+                       
+                       recData(serial_port, &input_address, &input_command);
+                       printf("addr in 2: %X \n ", input_address);
+                       printf("comm in 2: %X \n ", input_command);
+                       break;
+    
+                case '4':            //this turn on the led
+                       output_command = 0x06;
+                       output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
+                       sendData(serial_port, output_address, output_command);
         
+                       printf("addr out: %X \n ", output_address);
+                       printf("comm out: %X \n ", output_command);
+                       printf("addr in 1: %X \n ", input_address);
+                       printf("comm in 1: %X \n ", input_command);
+        
+                       recData(serial_port, &input_address, &input_command);
+                       printf("addr in 2: %X \n ", input_address);
+                       printf("comm in 2: %X \n ", input_command);
+                       break;
+    
+                case '5':            //this turn off the led
+                       output_command = 0x07;
+                       output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
+                       sendData(serial_port, output_address, output_command);
+        
+                       printf("addr out: %X \n ", output_address);
+                       printf("comm out: %X \n ", output_command);
+                       printf("addr in 1: %X \n ", input_address);
+                       printf("comm in 1: %X \n ", input_command);
+        
+                       recData(serial_port, &input_address, &input_command);
+                       printf("addr in 2: %X \n ", input_address);
+                       printf("comm in 2: %X \n ", input_command);
+                       break;
+                   
+               default:
+                      { printf("Escolha novamente, opcao invalida!"); }
+            }
+        }
+        while(menu_choice != '0'); */
+            
         return 0;
+}
+
+void sendData(int port, char addr, char comm){
+     serialPutchar(port, addr);
+     serialPutchar(port, comm);
+}
+
+void recData(int port, char *addr, char *comm){
+     *addr = serialGetchar(port);
+     *comm = serialGetchar(port);
+}
+
+void evaluateData(char addr, char comm){
+    // printf("NOT IMPLEMENTED");
+    if (comm == 0xFE){
+       printf("É HEXA UHUUUUUL!!");
+    }
+
+    if (comm == 0xFE){
+       printf("É HEXA UHUUUUUL!!");
+    }
 }
