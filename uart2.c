@@ -22,7 +22,6 @@ int main (void) {
         setlocale(LC_ALL,"Portuguese");			//Comando para utilizar caracteres a lingua portuguesa.
     
         int serial_port, i = 0;
-        char menu_choice = 'a';
         unsigned char output_address, output_command, input_address, input_command;
 
         if ((serial_port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
@@ -48,7 +47,7 @@ int main (void) {
 
         for(i = 0; i <= 4; i++){
             if(i == 0){                   //write 0x03 twice; this checks the NodeMCU status.
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
                sleep(4);
 
@@ -67,7 +66,7 @@ int main (void) {
             }
 
             if(i == 1){            //write 0x04 twice; this requests analog input value
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Solicita o valor da entrada analógica. \n \n");
                sleep(4);
 
@@ -86,7 +85,7 @@ int main (void) {
             }
 
             if(i == 2){            //this requests some digital input value
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Solicita o valor de uma das entradas digitais. \n \n");
                sleep(4);
 
@@ -105,7 +104,7 @@ int main (void) {
             }
 
             if(i == 3){            //this turn on the led
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Acendimento do led da NodeMCU. \n \n");
                sleep(4);
 
@@ -126,7 +125,7 @@ int main (void) {
             if(i == 4){            //this turn off the led
                i = -1;       // RESET THE LOOP
 
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Desligamento do led da NodeMCU. \n \n");
                sleep(4);
 
@@ -145,103 +144,6 @@ int main (void) {
             }
 
         }
-
-        /*do {
-            printf("Escolha uma das opções abaixo. \n\n");
-            printf("1) Verificar status do NodeMCU. \n");
-            printf("2) Requisitar entrada analógica. \n");
-            printf("3) Requisitar entrada digital. \n");
-            printf("4) Piscar Led. \n");
-            printf("5) Desligar Led. \n");
-            printf("0) Encerrar. \n");
-            printf("Opção: ");
-            scanf("%s \n", &menu_choice);
-            
-            switch(menu_choice){
-                  case '0':
-                       printf("Programa encerrado.");
-                       break;
-            
-                  case '1':                   //write 0x03 twice; this checks the NodeMCU status.
-                       output_command = 0x03;
-                       output_address = 0x03;
-                       sendData(serial_port, output_address, output_command);
-                       
-                       printf("addr out: %d \n ", output_address);
-                       printf("comm out: %d \n ", output_command);
-                       printf("addr in 1: %d \n ", input_address);
-                       printf("comm in 1: %d \n ", input_command);
-                       
-                       recData(serial_port, &input_address, &input_command);
-                       printf("addr in 2: %d \n ", input_address);
-                       printf("comm in 2: %d \n ", input_command);
-                       break;
-                
-                case '2':                   //write 0x04 twice; this requests analog input value
-                       output_command = 0x04;
-                       output_address = 0x04;
-                       sendData(serial_port, output_address, output_command);
-                       
-                       printf("addr out: %X \n ", output_address);
-                       printf("comm out: %X \n ", output_command);
-                       printf("addr in 1: %X \n ", input_address);
-                       printf("comm in 1: %X \n ", input_command);
-                       
-                       recData(serial_port, &input_address, &input_command);
-                       printf("addr in 2: %X \n ", input_address);
-                       printf("comm in 2: %X \n ", input_command);
-                       break;
-                
-                case '3':            //this requests some digital input value
-                       output_command = 0x05;
-                       output_address = 0x04;   // IMPLEMENT HERE HOW TO CHOOSE WHAT INPUT WILL BE READ
-                       sendData(serial_port, output_address, output_command);
-                       
-                       printf("addr out: %X \n ", output_address);
-                       printf("comm out: %X \n ", output_command);
-                       printf("addr in 1: %X \n ", input_address);
-                       printf("comm in 1: %X \n ", input_command);
-                       
-                       recData(serial_port, &input_address, &input_command);
-                       printf("addr in 2: %X \n ", input_address);
-                       printf("comm in 2: %X \n ", input_command);
-                       break;
-    
-                case '4':            //this turn on the led
-                       output_command = 0x06;
-                       output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
-                       sendData(serial_port, output_address, output_command);
-        
-                       printf("addr out: %X \n ", output_address);
-                       printf("comm out: %X \n ", output_command);
-                       printf("addr in 1: %X \n ", input_address);
-                       printf("comm in 1: %X \n ", input_command);
-        
-                       recData(serial_port, &input_address, &input_command);
-                       printf("addr in 2: %X \n ", input_address);
-                       printf("comm in 2: %X \n ", input_command);
-                       break;
-    
-                case '5':            //this turn off the led
-                       output_command = 0x07;
-                       output_address = 0x04;   // THIS VALUE MUST BE THE BUILTIN LED PIN
-                       sendData(serial_port, output_address, output_command);
-        
-                       printf("addr out: %X \n ", output_address);
-                       printf("comm out: %X \n ", output_command);
-                       printf("addr in 1: %X \n ", input_address);
-                       printf("comm in 1: %X \n ", input_command);
-        
-                       recData(serial_port, &input_address, &input_command);
-                       printf("addr in 2: %X \n ", input_address);
-                       printf("comm in 2: %X \n ", input_command);
-                       break;
-                   
-               default:
-                      { printf("Escolha novamente, opcao invalida!"); }
-            }
-        }
-        while(menu_choice != '0'); */
             
         return 0;
 }
