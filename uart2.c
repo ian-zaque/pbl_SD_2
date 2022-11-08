@@ -39,8 +39,9 @@ void evaluateRecData(char addr, char comm, int value);
 int main (void) {
         setlocale(LC_ALL,"Portuguese");			// TO ACTIVATE PORTUGUESE CHARACTERS
 
-        int serial_port, i = 0, digital_input_comm = 49;
+        int serial_port, i = 0, j = 0;
         char *output_command, *input_command, *input_address, *input_value;
+        char sensors[9] = {"012345678"};
 
         if ((serial_port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
                 fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno));
@@ -63,7 +64,7 @@ int main (void) {
         printf("5 - Desligamento do led da NodeMCU. \n \n");
         sleep(4);
         
-        printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
+        /*printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
         sleep(1);
 
        output_command = "30";
@@ -75,27 +76,25 @@ int main (void) {
        printf("comm out: %s \n ", output_command);
 
        recData(serial_port, input_command, input_address);
-       //printf("comm in 0: %s \n \n", input_command);
+       printf("comm in 0: %s \n \n", input_command);
+       printf("comm in 0: %s \n \n", input_address); */
 
-        /*for(i = 0; i <= 4; i++){
+        for(i = 0; i <= 4; i++){
             if(i == 0){                   //write 0x03 twice; this checks the NodeMCU status.
                printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
                sleep(1);
 
-               output_command = "33";
-               //output_address = '3';
+               output_command = "30";
                
                fflush (stdout);
                serialFlush(serial_port);
-               sendData(serial_port, output_command);
+               sendData(serial_port, "30");
 
-               printf("comm out: %X , %d , %s \n ", output_command, output_command, output_command);
-               printf("addr in 0: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 0: %X , %d , %c \n ", input_command, input_command, input_command);
+               printf("comm out: %s \n ", output_command);
 
-               recData(serial_port, &input_address, &input_command);
-               printf("addr in 0: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 0: %X , %d , %c \n \n", input_command, input_command, input_command);
+               recData(serial_port, input_command, input_address);
+               printf("comm in 0: %s \n \n", input_command);
+               printf("comm in 0: %s \n \n", input_address);
                //evaluateRecData(input_address, input_command, 0);
             }
 
@@ -108,15 +107,13 @@ int main (void) {
                
                fflush (stdout);
                serialFlush(serial_port);
-               sendData(serial_port, output_command);
+               sendData(serial_port, "40");
 
-               printf("comm out: %X , %d , %s \n ", output_command, output_command, output_command);
-               printf("addr in 1: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 1: %X , %d , %c \n ", input_command, input_command, input_command);
+               printf("comm out: %s \n ", output_command);
 
-               recDataInput(serial_port, &input_address, &input_command, &input_value);
-               printf("addr in 1: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 1: %X , %d , %c \n \n", input_command, input_command, input_command);
+               recDataInput(serial_port, input_command, input_address, input_value);
+               printf("comm in 0: %s \n \n", input_command);
+               printf("comm in 0: %s \n \n", input_address);
                //evaluateRecData(input_address, input_command, input_value);
             }
 
@@ -125,23 +122,24 @@ int main (void) {
                printf("Ação: Solicita o valor de uma das entradas digitais. \n \n");
                sleep(1);
 
-               output_command = '5';
+               output_command = "5";
+               printf("comm out: %s \n ", output_command);
 
-               for (digital_input_comm = 49; digital_input_comm <= 58; digital_input_comm++){   //LOOP TO COMMUTE DIGITAL SENSORS
-                   printf("Entrada digital: %d. \n \n", digital_input_comm);
+               for (j = 0; j <= 8; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
+                   printf("Entrada digital: %d. \n \n", j);
+                   //printf("jjjj %s , %c \n ", &sensors[j], sensors[j]);
+                   strcat(output_command, &sensors[j]);
+                   //printf("comm out: %s \n ", output_command);
                    
                    fflush (stdout);
                    serialFlush(serial_port);
-                   sendDataDigitalInput(serial_port, output_command);
+                   sendData(serial_port, output_command);
 
-                   printf("comm out: %X , %d , %s \n ", output_command, output_command, output_command);
-                   printf("addr in 2: %X , %d , %c \n ", input_address, input_address, input_address);
-                   printf("comm in 2: %X , %d , %c \n ", input_command, input_command, input_command);
-
-                   recDataInput(serial_port, &input_address, &input_command, &input_value);
-                   printf("addr in 1: %X , %d , %c \n ", input_address, input_address, input_address);
-                   printf("comm in 1: %X , %d , %c \n ", input_command, input_command, input_command);
-                   printf("val in 2: %X , %d , %c \n \n", input_value, input_value, input_value);
+                   printf("comm out: %s \n ", output_command);
+    
+                   recDataInput(serial_port, input_command, input_address, input_value);
+                   printf("comm in 0: %s \n \n", input_command);
+                   printf("comm in 0: %s \n \n", input_address);
                    //evaluateRecData(input_address, input_command, input_value);
                }
             }
@@ -155,15 +153,13 @@ int main (void) {
                
                fflush (stdout);
                serialFlush(serial_port);
-               sendData(serial_port, output_command);
+               sendData(serial_port, "60");
 
-               printf("comm out: %X , %d , %s \n ", output_command, output_command, output_command);
-               printf("addr in 3: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 3: %X , %d , %c \n ", input_command, input_command, input_command);
+               printf("comm out: %s \n ", "60");
 
-               recData(serial_port, &input_address, &input_command);
-               printf("addr in 3: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 3: %X , %d , %c \n ", input_command, input_command, input_command);
+               recData(serial_port, input_command, input_address);
+               printf("comm in 0: %s \n \n", input_command);
+               printf("comm in 0: %s \n \n", input_address);
             }
 
             if(i == 4){            //this turn off the led
@@ -177,18 +173,16 @@ int main (void) {
                
                fflush (stdout);
                serialFlush(serial_port);
-               sendData(serial_port, output_command);
+               sendData(serial_port, "70");
 
-               printf("comm out: %X , %d , %s \n ", output_command, output_command, output_command);
-               printf("addr in 4: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 4: %X , %d , %c \n ", input_command, input_command, input_command);
+               printf("comm out: %s \n ", "70");
 
-               recData(serial_port, &input_address, &input_command);
-               printf("addr in 4: %X , %d , %c \n ", input_address, input_address, input_address);
-               printf("comm in 4: %X , %d , %c \n ", input_command, input_command, input_command);
+               recData(serial_port, input_command, input_address);
+               printf("comm in 0: %s \n \n", input_command);
+               printf("comm in 0: %s \n \n", input_address);
             }
 
-        } */
+        }
 
         return 0;
 }
@@ -214,13 +208,31 @@ void recData(int port, char *comm, char *addr){
      buffer[1] = serialGetchar(port);
      printf("GETCHAR 1: %s \n \n", buffer);
      comm = buffer;
-     //strcat(comm, addr);
+     printf("GETCHAR 2: %s \n \n", comm);
 }
 
 void recDataInput(int port, char *addr, char *comm, char *val){
-     *comm = serialGetchar(port);
-     *addr = serialGetchar(port);
-     *val  = serialGetchar(port);
+     // memset(comm, 0, strlen(comm));
+     //memset(comm, 0, strlen(addr));
+     
+     char bufferComm[2];
+     char bufferVal[2];
+     
+     //sleep(2);
+     bufferComm[0] = serialGetchar(port);
+     printf("GETCHAR 0: %s \n \n", bufferComm);
+     bufferComm[1] = serialGetchar(port);
+     printf("GETCHAR 1: %s \n \n", bufferComm);
+     comm = bufferComm;
+     printf("GETCHAR 2: %s \n \n", comm);
+     
+     bufferVal[0] = serialGetchar(port);
+     printf("GETCHAR 2: %s \n \n", bufferVal);
+     bufferVal[1] = serialGetchar(port);
+     printf("GETCHAR 3: %s \n \n", bufferVal);
+     val = bufferVal;
+     
+     printf("GETCHAR 3: %s \n \n", val);
 }
 
 void evaluateRecData(char addr, char comm, int value){
