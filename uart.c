@@ -17,15 +17,20 @@
 0x02 - Estado da entrada digital
 */
 
+//BIBS TO MANIPULATE STRING, PORTUGUESE CHARACTERS, SLEEP, I/O
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
-#include <unistd.h>                //BIB TO SLEEP FUNCTION
+#include <unistd.h>
 #include <errno.h>
 
+// BIBS TO SERIAL COMMUNICATION
 #include <wiringPi.h>
 #include <wiringSerial.h>
+
+//BIB TO DISPLAY
+#include "display.h"
 
 #define BAUD_RATE 9600
 
@@ -33,7 +38,7 @@ void sendData(int port, char *comm);
 void sendDataDigitalInput(int port, char addr, int comm);
 void recData(int port, char *comm, char *addr);
 void recDataInput(int port, char *addr, char *comm, char *val);
-void evaluateRecData(char addr, char comm, int value);
+void evaluateRecData(char *addr, char *comm, char *value);
 
 
 int main (void) {
@@ -54,33 +59,23 @@ int main (void) {
                 return 1;
         }
         
+        initDisplay();  // inicializa o display lcd
+        char intro[] = "PBL 2 - E/S";
+        write_textLCD(intro);
+        
         //system("cls || clear");
         printf("PBL - Interfaces de E/S. \n \n");
         printf("As ações seguirão a seguinte ordem: \n");
-        printf("1 - Solicita a situa atual do NodeMCU. \n");
+        printf("1 - Solicita a situação atual do NodeMCU. \n");
         printf("2 - Solicita o valor da entrada analógica. \n");
         printf("3 - Solicita o valor de uma das entradas digitais. \n");
         printf("4 - Acendimento do led da NodeMCU. \n");
         printf("5 - Desligamento do led da NodeMCU. \n \n");
-        sleep(4);
+        sleep(2);
         
-        /*printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
-        sleep(1);
 
-       output_command = "30";
-       
-       fflush (stdout);
-       serialFlush(serial_port);
-       sendData(serial_port, "30");
-
-       printf("comm out: %s \n ", output_command);
-
-       recData(serial_port, input_command, input_address);
-       printf("comm in 0: %s \n \n", input_command);
-       printf("comm in 0: %s \n \n", input_address); */
-
-        for(i = 0; i <= 4; i++){
-            if(i == 0){                   //write 0x03 twice; this checks the NodeMCU status.
+        for(i = 0; i <= 4; i++){           // LOOP TO ENGAGE AUTOMATIC ACTIONS
+            if(i == 0){                   //this checks the NodeMCU status.
                printf("Ação: Solicita a situação atual do NodeMCU. \n \n");
                sleep(1);
 
@@ -95,10 +90,10 @@ int main (void) {
                recData(serial_port, input_command, input_address);
                printf("comm in 0: %s \n \n", input_command);
                printf("comm in 0: %s \n \n", input_address);
-               //evaluateRecData(input_address, input_command, 0);
+               evaluateRecData(input_address, input_command, 0);
             }
 
-            if(i == 1){            //write 0x04 twice; this requests analog input value
+            if(i == 1){            //this requests analog input value
                //system("cls || clear");
                printf("Ação: Solicita o valor da entrada analógica. \n \n");
                sleep(1);
@@ -114,7 +109,7 @@ int main (void) {
                recDataInput(serial_port, input_command, input_address, input_value);
                printf("comm in 0: %s \n \n", input_command);
                printf("comm in 0: %s \n \n", input_address);
-               //evaluateRecData(input_address, input_command, input_value);
+               evaluateRecData(input_address, input_command, input_value);
             }
 
             if(i == 2){            //this requests some digital input value
@@ -125,7 +120,7 @@ int main (void) {
                output_command = "5";
                printf("comm out: %s \n ", output_command);
 
-               for (j = 0; j <= 9; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
+               /*for (j = 0; j <= 9; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
                    printf("Entrada digital: %d. \n \n", j);
                    //printf("jjjj %s , %c \n ", &sensors[j], sensors[j]);
                    strcat(output_command, &sensors[j]);
@@ -140,16 +135,16 @@ int main (void) {
                    recDataInput(serial_port, input_command, input_address, input_value);
                    printf("comm in 0: %s \n \n", input_command);
                    printf("comm in 0: %s \n \n", input_address);
-                   //evaluateRecData(input_address, input_command, input_value);
-               }
+                   //evaluateRecData(&input_address, &input_command, &input_value);
+               } */
             }
 
             if(i == 3){            //this turn on the led
                //system("cls || clear");
-               printf("Ação: Acendimento do led da NodeMCU. \n \n");
+               printf("Ação: Acendimento do LED da NodeMCU. \n \n");
                sleep(1);
 
-               output_command = "60";  // THIS VALUE MUST BE THE BUILTIN LED PIN
+               output_command = "60";
                
                fflush (stdout);
                serialFlush(serial_port);
@@ -160,16 +155,17 @@ int main (void) {
                recData(serial_port, input_command, input_address);
                printf("comm in 0: %s \n \n", input_command);
                printf("comm in 0: %s \n \n", input_address);
+               write_textLCD("LED On");
             }
 
             if(i == 4){            //this turn off the led
                i = -1;             // RESET THE LOOP
 
                //system("cls || clear");
-               printf("Ação: Desligamento do led da NodeMCU. \n \n");
+               printf("Ação: Desligamento do LED do NodeMCU. \n \n");
                sleep(1);
 
-               output_command = "70";   // THIS VALUE MUST BE THE BUILTIN LED PIN
+               output_command = "70";
                
                fflush (stdout);
                serialFlush(serial_port);
@@ -180,6 +176,7 @@ int main (void) {
                recData(serial_port, input_command, input_address);
                printf("comm in 0: %s \n \n", input_command);
                printf("comm in 0: %s \n \n", input_address);
+               write_textLCD("LED Off");
             }
 
         }
@@ -204,11 +201,11 @@ void recData(int port, char *comm, char *addr){
      
      //sleep(2);
      buffer[0] = serialGetchar(port);
-     printf("GETCHAR 0: %s \n \n", buffer);
+     //printf("GETCHAR 0: %s \n \n", buffer);
      buffer[1] = serialGetchar(port);
-     printf("GETCHAR 1: %s \n \n", buffer);
+     //printf("GETCHAR 1: %s \n \n", buffer);
      comm = buffer;
-     printf("GETCHAR 2: %s \n \n", comm);
+     //printf("GETCHAR 2: %s \n \n", comm);
 }
 
 void recDataInput(int port, char *addr, char *comm, char *val){
@@ -220,46 +217,54 @@ void recDataInput(int port, char *addr, char *comm, char *val){
      
      //sleep(2);
      bufferComm[0] = serialGetchar(port);
-     printf("GETCHAR 0: %s \n \n", bufferComm);
+     //printf("GETCHAR 0: %s \n \n", bufferComm);
      bufferComm[1] = serialGetchar(port);
-     printf("GETCHAR 1: %s \n \n", bufferComm);
+     //printf("GETCHAR 1: %s \n \n", bufferComm);
      comm = bufferComm;
-     printf("GETCHAR 2: %s \n \n", comm);
+     //printf("GETCHAR 2: %s \n \n", comm);
      
      bufferVal[0] = serialGetchar(port);
-     printf("GETCHAR 2: %s \n \n", bufferVal);
+     //printf("GETCHAR 2: %s \n \n", bufferVal);
      bufferVal[1] = serialGetchar(port);
-     printf("GETCHAR 3: %s \n \n", bufferVal);
+     //printf("GETCHAR 3: %s \n \n", bufferVal);
      val = bufferVal;
      
-     printf("GETCHAR 3: %s \n \n", val);
+     //printf("GETCHAR 4: %s \n \n", val);
 }
 
-void evaluateRecData(char addr, char comm, int value){
+void evaluateRecData(char *addr, char *comm, char *value){
 
-    if (addr == 0x03 && comm == 0x1F){
-       printf("NodeMCU com problema!! \n \n");
-       // escreve no display
+    if ( strcmp(comm, "1F") == 0){
+       write_textLCD("NodeMcu Not Ok");
+       printf("NodeMcu com problema!! \n \n");
     }
 
-    if(addr != 0x03 && comm == 0x1F){
-       printf("NodeMCU com problema, sensor desconhecido!! \n \n");
-       // escreve no display
+    else if (strcmp(comm, "00") == 0){
+       write_textLCD("NodeMcu Ok");
+       printf("NodeMcu Ok!! \n \n");
     }
 
-    if (comm == 0x01){
-       printf("Medida da entrada analógica: %d. \n \n", value);
-       // escreve no display
+    else if (strcmp(comm, "01") == 0){
+       char text[] = "S. Analogico: ";
+       strcat(text, value);
+       write_textLCD(text);
+       printf("Sensor analogico: %s. \n \n", value);
     }
 
-    if (comm == 0x02){
-        printf("Medida da entrada digital: %d. \n \n", value);
-       // escreve no display
+    else if (strcmp(comm, "02") == 0){
+       char text[] = "S. Digital: ";
+       strcat(text, addr);
+
+       char text2[] = " ";
+       strcat(text2, value);
+       strcat(text, text2);
+       write_textLCD(text2);
+       printf("Sensor digital %s: %s. \n \n", addr[1], value);
     }
 
     else{
-        printf("Resposta desconhecida: %X , %c. \n", comm, comm);
-        printf("Valor recebido: %d , %c. \n \n", value);
-       // escreve no display
+        write_textLCD("NodeMcu Not Ok");
+        printf("Resposta desconhecida: %s. \n", comm);
+        printf("Valor recebido: %s. \n \n", value);
     }
 }
