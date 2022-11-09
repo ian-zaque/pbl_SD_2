@@ -101,35 +101,15 @@ O diagrama a seguir resume o fluxo da solução do problema:
 
 1. Clone o repositório.
     ```sh
-    git clone https://github.com/ian-zaque/pbl_SD_2.git
+        git clone https://github.com/ian-zaque/pbl_SD_2.git
     ```
 
-2. Compile e monte o arquivo 'display.s'.
-    * Com makefile
-        ```sh
-            make display
-        ```
+2. Compile os programas.
+    ```sh
+        make
+    ```
 
-    * Sem makefile
-        ```sh
-            as -o display.o display.s
-        ```
-        ```sh
-            ld -o display display.o
-        ```
-
-3. Compile e monte o arquivo 'uart.c'.
-    * Com makefile
-        ```sh
-            make uart
-        ```
-
-    * Sem makefile
-        ```sh
-            gcc -uart.c -o uart.run -lwiringPi
-        ```
-
-4. Configure o módulo Wifi ESP8266 NodeMcu.
+3. Configure o módulo Wifi ESP8266 NodeMcu.
     * No software Arduino IDE:
     <ul>
         <li> Abrir arquivo SD_PBL.ino </li>
@@ -137,7 +117,7 @@ O diagrama a seguir resume o fluxo da solução do problema:
         <li> Se conectado, carregar sketch no módulo </li>
     </ul
 
-5. Execute o arquivo abaixo gerado.
+4. Execute o arquivo abaixo gerado.
     ```sh
         sudo ./uart.run
      ```
