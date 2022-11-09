@@ -29,10 +29,10 @@ int val_digital = 0;
 
 
 //response command
-int operating_normally = 0x00;
-int  with_problem= 0x1F;
-int analog_entry_measure= 0x01;
-int digital_input_status=0x02;
+String operating_normally   = "00";
+String with_problem         = "1F";
+String analog_entry_measure = "01";
+String digital_input_status = "02";
 
 
 //String comand = "";
@@ -50,14 +50,14 @@ IPAddress subnet(255, 255, 0, 0);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Booting");
+  //Serial.println("Booting");
 
   // Configuração do IP fixo no roteador, se não conectado, imprime mensagem de falha
   if (!WiFi.config(local_IP, gateway, subnet)) {
     Serial.println("STA Failed to configure");
   }
 
-  
+ 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -117,130 +117,115 @@ void setup() {
 
 
   // Setup project
-
-   Serial.begin(115200);
   pinMode(LED_BUILTIN,OUTPUT);
-  //  Defined input pins
-  pinMode(D0,INPUT );
-  pinMode(D1,INPUT );
-  pinMode(D2,INPUT );
-  pinMode(D3,INPUT );
-  pinMode(D4,INPUT );
-  pinMode(D5,INPUT );
-  pinMode(D6,INPUT );
-  pinMode(D7,INPUT );
-  pinMode(D8,INPUT );
-  
-  pinMode(A0,INPUT);
+  Serial.begin(9600);
 
-  
+
+  // limpa buff
+  if(Serial.available() >0 ){
+    Serial.readString();
+  }
+
+  for(int i =0;i  < 5; i++){
+   digitalWrite(LED_BUILTIN, LOW);
+     delay(50);                  // Wait for a second
+      digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off by making the voltage HIGH
+      delay(50);      
+   }
+ 
 }
 
 void loop() {
   ArduinoOTA.handle();
 
+  pinMode(LED_BUILTIN,OUTPUT);
 
   if(Serial.available()>0){
-  
-    int command = Serial.read();
-    Serial.println(command);   
-    switch (command) {
-      
-      case 0x03: // situation NodeMCU
-        Serial.write(operating_normally);   
-        break;
-      case 0x04 : // return analogic input value
-        {
-          
-        int val_analog = analogRead(A0);
-        Serial.write(analog_entry_measure);
-        Serial.write(val_analog);
-        }
-        //analogWrite(TX,val_analog);  
-        break;
-      case 0x05: // return digital input value
-      {
-      Serial.write("Ola");
-         int address = Serial.read();  //read sensor address
-         
-            switch (address) {
-              case 49: // input Number one reference pin D0
-                val_digital = digitalRead(D0); 
-                Serial.write(digital_input_status);
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital);                            
-                break;
-              case 50: // input number two one reference pin D1
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D1); 
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital);    
-                break;
-              case 51 : // input number three on reference pin D2
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D2);
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital)
-                break;
-              case 52: // input number four on reference pin D3
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D3);
-                Serial.write(val_digital);
-                //digitalWrite(TX,val_digital);
-                break;
-              case 53: // input number five on reference pin D4
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D4);
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital);
-                break;
-
-              case 54: // input number six on reference pin D5
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D5);
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital);
-                break;
-              case 56: // input number six on reference pin D6
-                Serial.write(digital_input_status);
-                 val_digital=digitalRead(D6);
-                Serial.write(val_digital);
-                //digitalWrite(TX, val_digital);
-                break; 
-              case 57: // input number seven on reference pin D7
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D7);
-                Serial.write(val_digital);
-                //digitalWrite(TX,val_digital);
-                break;
-
-              case 58: // input number eight on reference pin D8
-                Serial.write(digital_input_status);
-                 val_digital = digitalRead(D8);
-                Serial.write(val_digital);
-                //digitalWrite(TX,val_digital);
-                break;   
-              default:
-
-                 Serial.write(with_problem);
-                //digitalWrite(TX,with_problem);
-                break;                           
-              }       
-          }  
-        break;
-      case 0x06: // LED blinks NodeMCU
-         digitalWrite(LED_BUILTIN,HIGH);
-         break;
-      default: 
-        Serial.write(with_problem);
-        // digitalWrite(TX,with_problem);
-        break;                   
-        
+      String command = Serial.readString();
+      command.trim();
+   
+    if(command[0] == '3' && command[1]=='0'){ // NodeMCU situation
+       Serial.print(operating_normally);
+       //Serial.print(operating_normally[1]);
     }
-  
-    
-  } 
+   
+    else if(command[0] =='4' && command[1]=='0'){ // return analogic input value
+        int val_analog = analogRead(A0);
+        Serial.print(analog_entry_measure);
+        Serial.print(val_analog);
+    }
+   
+    else if(command[0] == '5'){
+        char address = command[1];  //read sensor address
+       
+        switch (address) {
+          case '1': // input Number one reference pin D0
+            val_digital = digitalRead(D0);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);                            
+            break;
+            
+          case '2': // input number two one reference pin D1
+            val_digital = digitalRead(D1);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);  
+            break;
+            
+          case '3' : // input number three on reference pin D2
+            val_digital = digitalRead(D2);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
+            
+          case '4': // input number four on reference pin D3
+            val_digital = digitalRead(D3);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
+            
+          case '5': // input number five on reference pin D4
+            val_digital = digitalRead(D4);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
 
+          case '6': // input number six on reference pin D5
+            val_digital = digitalRead(D5);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
+            
+          case '7': // input number six on reference pin D6
+            val_digital=digitalRead(D6);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
+          case '8': // input number seven on reference pin D7
+            val_digital = digitalRead(D7);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;
+
+          case '9': // input number eight on reference pin D8
+            val_digital = digitalRead(D8);
+            Serial.print(digital_input_status);
+            Serial.print(val_digital);
+            break;                          
+          }      
+    }
+   
+    else if(command[0] =='6'){          // LED blinks NodeMCU
+         digitalWrite(LED_BUILTIN,LOW);
+    }
+
+    else if(command[0] =='7'){           // LED blinks NodeMCU
+         digitalWrite(LED_BUILTIN,HIGH);
+    }
+   
+    else{
+      Serial.println(with_problem);
+    }
+   
+  }
  
-  
 }
