@@ -146,13 +146,11 @@ void loop() {
    
     if(command[0] == '3' && command[1]=='0'){ // NodeMCU situation
        Serial.print(operating_normally);
-       //Serial.print(operating_normally[1]);
     }
    
     else if(command[0] =='4' && command[1]=='0'){ // return analogic input value
-        int val_analog = analogRead(A0);
         Serial.print(analog_entry_measure);
-        Serial.print(val_analog);
+        Serial.print(analogRead(A0));
     }
    
     else if(command[0] == '5'){
@@ -164,25 +162,25 @@ void loop() {
             Serial.print(digital_input_status);
             Serial.print(val_digital);                            
             break;
-            
+           
           case '2': // input number two one reference pin D1
             val_digital = digitalRead(D1);
             Serial.print(digital_input_status);
             Serial.print(val_digital);  
             break;
-            
+           
           case '3' : // input number three on reference pin D2
             val_digital = digitalRead(D2);
             Serial.print(digital_input_status);
             Serial.print(val_digital);
             break;
-            
+           
           case '4': // input number four on reference pin D3
             val_digital = digitalRead(D3);
             Serial.print(digital_input_status);
             Serial.print(val_digital);
             break;
-            
+           
           case '5': // input number five on reference pin D4
             val_digital = digitalRead(D4);
             Serial.print(digital_input_status);
@@ -194,7 +192,7 @@ void loop() {
             Serial.print(digital_input_status);
             Serial.print(val_digital);
             break;
-            
+           
           case '7': // input number six on reference pin D6
             val_digital=digitalRead(D6);
             Serial.print(digital_input_status);
@@ -216,14 +214,16 @@ void loop() {
    
     else if(command[0] =='6'){          // LED blinks NodeMCU
          digitalWrite(LED_BUILTIN,LOW);
+         Serial.print(operating_normally);
     }
 
     else if(command[0] =='7'){           // LED blinks NodeMCU
          digitalWrite(LED_BUILTIN,HIGH);
+         Serial.print(operating_normally);
     }
    
     else{
-      Serial.println(with_problem);
+      Serial.print(with_problem);
     }
    
   }
