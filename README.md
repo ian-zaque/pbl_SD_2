@@ -26,7 +26,7 @@ A comunicação entre o SBC e o NodeMcu segue um padrão definido no corpo do pr
     <small>Fonte: Problema 2 - Interfaces de E/S</small>
 </div>
 
-O protocolo de requisição ainda conta com mais uma requisição: Desligamento do LED do NodeMcu (Código 0x07).
+O protocolo de requisição ainda conta com mais uma requisição: <b> Desligamento do LED do NodeMcu (Código 0x07) </b>.
 <br>
 
 <div align="justify">
