@@ -20,14 +20,14 @@ O frame UART é constituído por 2 bits de início e fim, 7 ou 8 bits de dados e
 A comunicação entre o SBC e o NodeMcu segue um padrão definido no corpo do problema, contendo 2 bytes por mensagem. Um byte de requisição que especifica qual função será executada e um byte de endereço do sensor que é desejado ser lido. Quando não há um sensor a ser lido, o segundo byte é dado como 0. Nas tabelas abaixo é possível ver o protocolo de requisição e o de resposta.
 
 <div align="justify">
-    <img src="images/tabela1Reqs.png">
+    <img src="/images/tabela1Reqs.png">
     <p>Fonte: Problema 2 - Interfaces de E/S</p>
 </div>
 
 O protocolo de requisição ainda conta com mais uma requisição: Desligamento do LED do NodeMcu (Código 0x07).
 
 <div align="justify">
-    <img src ="images/tabela2Resps.png">
+    <img src ="/images/tabela2Resps.png">
     <p>Fonte: Problema 2 - Interfaces de E/S</p>
 </div>
 
