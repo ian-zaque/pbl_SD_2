@@ -49,6 +49,7 @@ int main (void) {
         write_textLCD(intro);
         
         system("cls || clear");
+        printf("PBL - Interfaces de E/S. \n \n");
         printf("As ações seguirão a seguinte ordem: \n");
         printf("1 - Solicita a situação atual do NodeMCU. \n");
         printf("2 - Solicita o valor da entrada analógica. \n");
@@ -70,16 +71,14 @@ int main (void) {
                serialFlush(serial_port);
                sendData(serial_port, "30");
 
-               printf("comm out: %s \n ", output_command);
+               //printf("comm out: %s \n ", output_command);
 
                recData(serial_port, input_command, input_address);
-               printf("comm in 0: %s \n \n", input_command);
-               printf("comm in 0: %s \n \n", input_address);
-               evaluateRecData(input_address, input_command, 0);
+               evaluateRecData(input_address, input_command, "00");
             }
 
             if(i == 1){            //this requests analog input value
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Solicita o valor da entrada analógica. \n \n");
                sleep(1);
 
@@ -90,11 +89,7 @@ int main (void) {
                serialFlush(serial_port);
                sendData(serial_port, "40");
 
-               printf("comm out: %s \n ", output_command);
-
                recDataInput(serial_port, input_command, input_address, input_value);
-               printf("comm in 0: %s \n \n", input_command);
-               printf("comm in 0: %s \n \n", input_address);
                evaluateRecData(input_address, input_command, input_value);
             }
 
@@ -106,7 +101,7 @@ int main (void) {
                output_command[0] = '5';
                output_command[1] = '0';
                
-               printf("comm out: %s \n ", output_command);
+              // printf("comm out: %s \n ", output_command);
 
                /*for (j = 0; j <= 9; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
                    printf("Entrada digital: %d. \n \n", j);
@@ -128,7 +123,7 @@ int main (void) {
             }
 
             if(i == 3){            //this turn on the led
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Acendimento do LED da NodeMCU. \n \n");
                sleep(1);
 
@@ -139,18 +134,14 @@ int main (void) {
                serialFlush(serial_port);
                sendData(serial_port, "60");
 
-               printf("comm out: %s \n ", "60");
-
                recData(serial_port, input_command, input_address);
-               printf("comm in 0: %s \n \n", input_command);
-               printf("comm in 0: %s \n \n", input_address);
                write_textLCD("LED On");
             }
 
             if(i == 4){            //this turn off the led
                i = -1;             // RESET THE LOOP
 
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Desligamento do LED do NodeMCU. \n \n");
                sleep(1);
 
@@ -161,11 +152,7 @@ int main (void) {
                serialFlush(serial_port);
                sendData(serial_port, "70");
 
-               printf("comm out: %s \n ", "70");
-
                recData(serial_port, input_command, input_address);
-               printf("comm in 0: %s \n \n", input_command);
-               printf("comm in 0: %s \n \n", input_address);
                write_textLCD("LED Off");
             }
 
@@ -183,59 +170,59 @@ void sendDataDigitalInput(int port, char addr, int comm){
      serialPutchar(port, addr);
 }
 
-void recData(int port, char *comm, char *addr){
-     //memset(comm, 0, strlen(comm));
-     //memset(comm, 0, strlen(addr));
-     
+void recData(int port, char *comm, char *addr){     
      char buffer[] = "";
      
      //sleep(2);
      buffer[0] = serialGetchar(port);
-     printf("GETCHAR 0: %s \n \n", buffer);
+     //printf("GETCHAR 0: %s \n \n", buffer);
      buffer[1] = serialGetchar(port);
-     printf("GETCHAR 1: %s \n \n", buffer);
+     //printf("GETCHAR 1: %s \n \n", buffer);
      comm[0] = buffer[0];
      comm[1] = buffer[1];
      addr[0] = buffer[0];
      addr[1] = buffer[1];
-     printf("GETCHAR 2: %s \n \n", comm);
+     //printf("GETCHAR 2: %s \n \n", comm);
 }
 
-void recDataInput(int port, char *addr, char *comm, char *val){
-     //memset(comm, 0, strlen(comm));
-     //memset(comm, 0, strlen(addr));
-     
+void recDataInput(int port, char *addr, char *comm, char *val){     
      char bufferComm[] = "";
-     char bufferVal[] = "";
+     char bufferVal[] = "00";
      
      //sleep(2);
      bufferComm[0] = serialGetchar(port);
-     printf("GETCHAR 0: %s \n \n", bufferComm);
+     //printf("GETCHAR 0: %s \n \n", bufferComm);
      bufferComm[1] = serialGetchar(port);
-     printf("GETCHAR 1: %s \n \n", bufferComm);
+     //printf("GETCHAR 1: %s \n \n", bufferComm);
      comm[0] = bufferComm[0];
      comm[1] = bufferComm[1];
      addr[0] = bufferComm[0];
      addr[1] = bufferComm[1];
-     printf("GETCHAR 2: %s \n \n", comm);
+     //printf("GETCHAR 2: %s \n \n", comm);
      
      bufferVal[0] = serialGetchar(port);
-     printf("GETCHAR 3: %s \n \n", bufferVal);
+     //printf("GETCHAR 3: %s \n \n", bufferVal);
      bufferVal[1] = serialGetchar(port);
-     bufferVal[2] = serialGetchar(port);
-     bufferVal[3] = serialGetchar(port);
+     //printf("GETCHAR 4: %s \n \n", bufferVal);
+     //printf("GETCHAR 5: %s \n \n", val);
      val[0] = bufferVal[0];
      val[1] = bufferVal[1];
-     printf("GETCHAR 4: %s \n \n", bufferVal);
-     
-     printf("GETCHAR 5: %s \n \n", val);
+     //printf("GETCHAR 6: %s \n \n", val);
 }
 
 void evaluateRecData(char *addr, char *comm, char *value){
      
-   //printf("COMM %s , %s , %s \n \n", comm, addr, value);
-    //printf("COMM 0 %c", comm[0]);
-    
+    //printf("COMM 0: %s , %s , %s \n \n", comm, addr, value);
+    //printf("COMM 1: %c \n", comm[0]);
+    //printf("COMM 2: %c \n", value[0]);
+    //printf("COMM 3: %c \n", value[1]);
+    //printf("COMM 4: %s \n", value);
+    char val[] = "";
+    val[0] = value[0];
+    val[1] = value[1];
+    value = "";
+    //printf("COMM 4: %s \n", val);
+
     // 1F
     if ( comm[0] == '1' && comm[1] == 'F'){
        write_textLCD("NodeMcu Not Ok");
@@ -248,10 +235,7 @@ void evaluateRecData(char *addr, char *comm, char *value){
 
     // 01
     else if (comm[0] == '0' && comm[1] == '1'){
-       char text[] = "S. Analogico: ";
-       char val[] = "";
-       val[0] = value[0];
-       val[1] = val[1];
+       char text[] = "S. Analog.: ";
        strcat(text, val);
        write_textLCD(text);
     }
