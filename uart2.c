@@ -41,7 +41,7 @@ int main (void) {
 
         int serial_port, i = 0, j = 0;
         char *output_command, *input_command, *input_address, *input_value;
-        char sensors[9] = {"012345678"};
+        char sensors[10] = {"0123456789"};
 
         if ((serial_port = serialOpen ("/dev/ttyS0", BAUD_RATE)) < 0) {
                 fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno));
@@ -125,7 +125,7 @@ int main (void) {
                output_command = "5";
                printf("comm out: %s \n ", output_command);
 
-               for (j = 0; j <= 8; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
+               for (j = 0; j <= 9; j++){   //LOOP TO COMMUTE DIGITAL SENSORS
                    printf("Entrada digital: %d. \n \n", j);
                    //printf("jjjj %s , %c \n ", &sensors[j], sensors[j]);
                    strcat(output_command, &sensors[j]);
