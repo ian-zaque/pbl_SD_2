@@ -71,8 +71,6 @@ int main (void) {
                serialFlush(serial_port);
                sendData(serial_port, "30");
 
-               //printf("comm out: %s \n ", output_command);
-
                recData(serial_port, input_command, input_address);
                evaluateRecData(input_address, input_command, "00");
             }
@@ -94,7 +92,7 @@ int main (void) {
             }
 
             if(i == 2){            //this requests some digital input value
-               //system("cls || clear");
+               system("cls || clear");
                printf("Ação: Solicita o valor de uma das entradas digitais. \n \n");
                sleep(1);
 
@@ -173,55 +171,39 @@ void sendDataDigitalInput(int port, char addr, int comm){
 void recData(int port, char *comm, char *addr){     
      char buffer[] = "";
      
-     //sleep(2);
      buffer[0] = serialGetchar(port);
-     //printf("GETCHAR 0: %s \n \n", buffer);
      buffer[1] = serialGetchar(port);
-     //printf("GETCHAR 1: %s \n \n", buffer);
+     
      comm[0] = buffer[0];
      comm[1] = buffer[1];
      addr[0] = buffer[0];
      addr[1] = buffer[1];
-     //printf("GETCHAR 2: %s \n \n", comm);
 }
 
 void recDataInput(int port, char *addr, char *comm, char *val){     
      char bufferComm[] = "";
      char bufferVal[] = "00";
      
-     //sleep(2);
      bufferComm[0] = serialGetchar(port);
-     //printf("GETCHAR 0: %s \n \n", bufferComm);
      bufferComm[1] = serialGetchar(port);
-     //printf("GETCHAR 1: %s \n \n", bufferComm);
+     
      comm[0] = bufferComm[0];
      comm[1] = bufferComm[1];
      addr[0] = bufferComm[0];
      addr[1] = bufferComm[1];
-     //printf("GETCHAR 2: %s \n \n", comm);
      
      bufferVal[0] = serialGetchar(port);
-     //printf("GETCHAR 3: %s \n \n", bufferVal);
      bufferVal[1] = serialGetchar(port);
-     //printf("GETCHAR 4: %s \n \n", bufferVal);
-     //printf("GETCHAR 5: %s \n \n", val);
+     
      val[0] = bufferVal[0];
      val[1] = bufferVal[1];
-     //printf("GETCHAR 6: %s \n \n", val);
 }
 
 void evaluateRecData(char *addr, char *comm, char *value){
-     
-    //printf("COMM 0: %s , %s , %s \n \n", comm, addr, value);
-    //printf("COMM 1: %c \n", comm[0]);
-    //printf("COMM 2: %c \n", value[0]);
-    //printf("COMM 3: %c \n", value[1]);
-    //printf("COMM 4: %s \n", value);
     char val[] = "";
     val[0] = value[0];
     val[1] = value[1];
     value = "";
-    //printf("COMM 4: %s \n", val);
 
     // 1F
     if ( comm[0] == '1' && comm[1] == 'F'){
